@@ -12,11 +12,11 @@
 <table class=" table table-bordered table-striped table-hover">
   <thead>
     <tr>
-      <th scope="col" class="text-center align-middle" style="width: 5%">#</th>
-      <th scope="col" class="text-center align-middle" style="width: 55%">Produk Dipesan</th>
-      <th scope="col" class="text-center align-middle" style="width: 10%">Harga per karton</th>
+      <th scope="col" class="text-center align-middle" style="width: 3%">#</th>
+      <th scope="col" class="text-center align-middle" style="width: 47%">Produk Dipesan</th>
+      <th scope="col" class="text-center align-middle" style="width: 15%">Harga per karton</th>
       <th scope="col" class="text-center align-middle" style="width: 20%">Kuantiti Dipesan</th>
-      <th scope="col" class="text-center align-middle" style="width: 10%">Jumlah (MYR)</th>
+      <th scope="col" class="text-center align-middle" style="width: 15%">Jumlah (MYR)</th>
     </tr>
   </thead>
   <tbody id="tableBody">
@@ -91,15 +91,19 @@
                 console.log(eachItem);
                 var row = document.createElement('tr');
 
-                var cellNum = document.createElement('th');
-                cellNum.appendChild(document.createTextNode(i+1));
-                cellNum.setAttribute('scope', 'row');
+                var cellNum = document.createElement('td');
+                cellNum.innerHTML = (i+1);
+                //cellNum.setAttribute('scope', 'row');
+                cellNum.classList.add("text-center");
+                cellNum.classList.add("align-middle");
 
                 var cellItem = document.createElement('td');
-                cellItem.appendChild(document.createTextNode(eachItem.item));
+                cellItem.innerHTML = eachItem.item+' ('+eachItem.variant+'ml)';
+                cellItem.classList.add("align-middle");
+                cellItem.classList.add("text-capitalize");
 
                 var cellUnitPrice = document.createElement('td');
-                cellUnitPrice.appendChild(document.createTextNode('3'+'.00'));
+                cellUnitPrice.innerHTML = '<span class="float-left text-muted">RM</span>148'+'.00';
                 cellUnitPrice.classList.add("text-right");
                 cellUnitPrice.classList.add("align-middle");
 
@@ -113,7 +117,7 @@
                 cellQuantity.classList.add("align-middle");
 
                 var cellTotal = document.createElement('td');
-                cellTotal.appendChild(document.createTextNode('13'+'.00'));
+                cellTotal.innerHTML = '<p class="float-left text-muted">RM</p>9999'+'.00';
                 cellTotal.classList.add("text-right");
                 cellTotal.classList.add("align-middle");
 
