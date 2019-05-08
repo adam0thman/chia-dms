@@ -20,37 +20,13 @@
     </tr>
   </thead>
   <tbody id="tableBody">
-    <tr>
-      <th scope="row">1</th>
-      <td>Minyak Morhabshi - 120ml</td>
-      <td class="text-right">148.00</td>
-      <td class="text-center">
-        <div class="row">
-          <div class="col-sm-5"><a class="btn btn-outline-dark btn-sm">-</a></div>
-          <div class="col-sm-2 text-center">20</div>
-          <div class="col-sm-5"><a class="btn btn-outline-dark btn-sm">+</a></div>
-        </div>
-      </td>
-      <td class="text-right">2960.00</td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Premium Stevia Morhabshi - 60ml</td>
-      <td class="text-right">148.00</td>
-      <td class="text-center">
-        <div class="row">
-          <div class="col-sm-5"><a class="btn btn-outline-dark btn-sm">-</a></div>
-          <div class="col-sm-2 text-center">20</div>
-          <div class="col-sm-5"><a class="btn btn-outline-dark btn-sm">+</a></div>
-        </div>
-      </td>
-      <td class="text-right">2960.00</td>
-    </tr>
+
   </tbody>
   <tfoot>
     <tr>
       <td colspan="4" class="text-right">Jumlah Perlu Dibayar:</td>
-      <td class="text-right"><i class="lead font-weight-bold text-success">8721.00</i></td>
+      <td class="text-right"><i class="float-left lead text-muted ">RM</i><i class="lead text-success"><span
+            id="divPayable">00</span>.00</i></td>
     </tr>
   </tfoot>
   </table>
@@ -82,9 +58,10 @@
         db.collection('agents/' + user.email + '/incart/').doc('cart')
           .onSnapshot(function (cartItems) {
             if (cartItems.data().line_items) {
-              console.log(i+1);
+              console.log(i + 1);
               console.log(cartItems.data().line_items);
               var allItems = cartItems.data().line_items;
+              var grandTotal = 0;
 
               allItems.forEach(function (eachItem) {
                 console.log("Current eachItem:");
@@ -92,32 +69,46 @@
                 var row = document.createElement('tr');
 
                 var cellNum = document.createElement('td');
-                cellNum.innerHTML = (i+1);
+                cellNum.innerHTML = (i + 1);
                 //cellNum.setAttribute('scope', 'row');
                 cellNum.classList.add("text-center");
                 cellNum.classList.add("align-middle");
 
                 var cellItem = document.createElement('td');
-                cellItem.innerHTML = eachItem.item+' ('+eachItem.variant+'ml)';
+                if (eachItem.item == 'minyak') {
+                  cellItem.innerHTML = 'Minyak Mujarab Morhabshi (' + eachItem.variant + 'ml)';
+                } else {
+                  cellItem.innerHTML = 'Premium Stevia Morhabshi (' + eachItem.variant + 'ml)';
+                }
+                cellItem.innerHTML += ' <small><a onclick="deleteItem(\''+user.email+'\',' + i + ')"><i class="text-muted">Remove</i></a></small>';
                 cellItem.classList.add("align-middle");
                 cellItem.classList.add("text-capitalize");
 
+                console.log('Current cartItems.data().price_minyak[' + eachItem.variant + '] is ' + cartItems.data().price_minyak[eachItem.variant]);
                 var cellUnitPrice = document.createElement('td');
-                cellUnitPrice.innerHTML = '<span class="float-left text-muted">RM</span>148'+'.00';
+                if (eachItem.item == 'minyak') {
+                  cellUnitPrice.innerHTML = '<span class="float-left text-muted">RM</span><span id="' + user.uid + '_unitprice_' + i + '">' + cartItems.data().price_minyak[eachItem.variant] + '</span>.00';
+                } else {
+                  cellUnitPrice.innerHTML = '<span class="float-left text-muted">RM</span><span id="' + user.uid + '_unitprice_' + i + '">' + cartItems.data().price_stevia[eachItem.variant] + '</span>.00';
+                }
                 cellUnitPrice.classList.add("text-right");
                 cellUnitPrice.classList.add("align-middle");
 
                 var cellQuantity = document.createElement('td');
-                cellQuantity.innerHTML = '<div class="row">'+
-                                         '<div class="col-sm-5"><a class="btn btn-outline-dark btn-sm">-</a></div>'+
-                                         '<div class="col-sm-2 text-center">'+eachItem.quantity+'</div>'+
-                                         '<div class="col-sm-5"><a class="btn btn-outline-dark btn-sm">+</a></div>'+
-                                         '</div>';
+                cellQuantity.innerHTML = '<div class="row">' +
+                  '<div class="col-sm-5"><a class="btn btn-outline-dark btn-sm" onclick="quantityDecrease(\'' + user.uid + '_item_' + i + '\',\'' + user.uid + '_linetotal_' + i + '\',\'' + user.uid + '_unitprice_' + i + '\')">-</a></div>' +
+                  '<div class="col-sm-2 text-center" id="' + user.uid + '_item_' + i + '">' + eachItem.quantity + '</div>' +
+                  '<div class="col-sm-5"><a class="btn btn-outline-dark btn-sm" onclick="quantityIncrease(\'' + user.uid + '_item_' + i + '\',\'' + user.uid + '_linetotal_' + i + '\',\'' + user.uid + '_unitprice_' + i + '\')">+</a></div>' +
+                  '</div>';
                 cellQuantity.classList.add("text-center");
                 cellQuantity.classList.add("align-middle");
 
                 var cellTotal = document.createElement('td');
-                cellTotal.innerHTML = '<p class="float-left text-muted">RM</p>9999'+'.00';
+                if (eachItem.item == 'minyak') {
+                  cellTotal.innerHTML = '<span class="float-left text-muted">RM</span><span id="' + user.uid + '_linetotal_' + i + '">' + parseInt(cartItems.data().price_minyak[eachItem.variant]) * parseInt(eachItem.quantity) + '</span>.00';
+                } else {
+                  cellTotal.innerHTML = '<span class="float-left text-muted">RM</span><span id="' + user.uid + '_linetotal_' + i + '">' + parseInt(cartItems.data().price_stevia[eachItem.variant]) * parseInt(eachItem.quantity) + '</span>.00';
+                }
                 cellTotal.classList.add("text-right");
                 cellTotal.classList.add("align-middle");
 
@@ -128,12 +119,75 @@
                 row.appendChild(cellTotal);
                 mainNode.appendChild(row);
                 i++;
+                if (eachItem.item == 'minyak') {
+                  grandTotal += parseInt(cartItems.data().price_minyak[eachItem.variant]) * parseInt(eachItem.quantity);
+                } else {
+                  grandTotal += parseInt(cartItems.data().price_stevia[eachItem.variant]) * parseInt(eachItem.quantity);
+                }
               }) // end allItems.forEach
+
+              // Update GrandTotal pricing in DOM placeholder
+              $('#divPayable').text(grandTotal)
             } // end if line_items
           }); // end items in cart
       } else {
         console.log("User NOT signed in.");
       }
     });
+
+    function deleteItem(theEmail, theIndex) {
+      var cartRef = db.collection('agents/' + theEmail + '/incart/').doc('cart');
+      return db.runTransaction(function (transaction) {
+        return transaction.get(cartRef).then(function (cartDoc) {
+          if (!cartDoc.data().line_items) {
+            var existingItems = [];
+          } else {
+            var existingItems = cartDoc.data().line_items;
+          }
+          existingItems.splice(theIndex, 1);
+          console.log("after splice:");
+          console.log(existingItems);
+          transaction.set(cartRef, {
+            last_updated: firebase.firestore.FieldValue.serverTimestamp(),
+            line_items: existingItems
+          }, { merge: true });
+        });
+      }).then(function () {
+        console.log("Transaction successfully committed, items removed from cart!");
+        location.reload();
+      }).catch(function (error) {
+        console.log("Transaction failed, cannot remove item from cart: ", error);
+      });
+    }
+
+    function quantityIncrease(domId, lineTotal, unitPrice) {
+      let curVal = $('#' + domId).text();
+      let newVal = parseInt(curVal) + 1;
+      if (curVal > 0 && curVal < 20) {
+        $('#' + domId).text(newVal);
+        let tempTotal = $('#' + lineTotal).text();
+        let price = $('#' + unitPrice).text();
+        let newLineTotal = parseInt(tempTotal) + parseInt(price);
+        $('#' + lineTotal).text(newLineTotal)
+        let curGrand = $('#divPayable').text();
+        let newGrand = parseInt(curGrand) + parseInt(price);
+        $('#divPayable').text(newGrand);
+      }
+    }
+
+    function quantityDecrease(domId, lineTotal, unitPrice) {
+      let curVal = $('#' + domId).text();
+      let newVal = parseInt(curVal) - 1;
+      if (newVal > 0) {
+        $('#' + domId).text(newVal);
+        let tempTotal = $('#' + lineTotal).text();
+        let price = $('#' + unitPrice).text();
+        let newLineTotal = parseInt(tempTotal) - parseInt(price);
+        $('#' + lineTotal).text(newLineTotal)
+        let curGrand = $('#divPayable').text();
+        let newGrand = parseInt(curGrand) - parseInt(price);
+        $('#divPayable').text(newGrand);
+      }
+    }
 
   </script>

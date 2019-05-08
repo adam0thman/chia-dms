@@ -122,6 +122,23 @@
         // Listen for new items added to cart
         db.collection('agents/'+user.email+'/incart/').doc('cart')
         .onSnapshot(function(cartItems) {
+          
+          var todayDate = new Date();
+          var todayUnix = todayDate.getTime()/1000;
+          console.log('todayUnix is: ' + todayUnix);
+          console.log('cartItems.data().last_updated["seconds"] is '+cartItems.data().last_updated["seconds"]);
+          console.log('difference is '+(todayUnix-cartItems.data().last_updated["seconds"]));
+          if ((todayUnix-cartItems.data().last_updated["seconds"]) > 86400) {
+            console.log('Items in cart last updated more then 1 days ago! So we empty the cart.');
+            db.collection('agents/'+user.email+'/incart/').doc('cart')
+            .update({
+              last_updated: firebase.firestore.FieldValue.serverTimestamp(),
+              line_items: []
+            }).catch(function(e) {
+              console.log('Error emptying cart:', e);
+            });
+          }
+
           if (!cartItems.data().line_items) {
             var items = [];
           } else {
@@ -152,7 +169,7 @@
       
       if (curVal > 0 && curVal < 20) {
         $('#quantity-'+product+'-actual').val(newVal);
-        $('#quantity-' + product).val('Pesan '+newVal+' karton');
+        $('#quantity-'+product).val('Pesan '+newVal+' karton');
       }
     }
 
@@ -200,7 +217,8 @@
           var lineItem = {
             item: product.trim(),
             quantity: productQuantity,
-            variant: parseInt(variant)
+            variant: parseInt(variant),
+            added: new Date()
           };
           existingItems.push(lineItem);
           console.log("after push:");
