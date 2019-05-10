@@ -33,30 +33,165 @@
 
   <button class="btn btn-outline-dark btn-lg btn-block">Batalkan semua pesanan.</button>
   <hr>
-  <button class="btn btn-info btn-lg btn-block">Bayar melalui deposit tunai/cek/bank draft.</button>
-  <hr>
-  <button class="btn btn-secondary btn-lg btn-block">Bayar sekarang menggunakan <span> </span><img
-      src="img/upay-logo-web.png" width="35px" /></button>
+  <button class="btn btn-secondary btn-lg btn-block" id="btnPayUpay" data-toggle="modal" data-target="#modalPay"
+    data-service="upay">Bayar sekarang menggunakan <span> </span><img src="img/upay-logo-web.png" width="35px" />
+    (Maybank2u/CimbClicks/Kredit/Debit dsbgnya)</button>
   <hr>
   <button class="btn btn-warning btn-lg btn-block">Bayar sekarang menggunakan <span> </span><img src="img/paypal.png"
       width="62px" /></button>
+  <hr>
+  <button class="btn btn-info btn-lg btn-block">Bayar melalui deposit tunai/cek/bank draft.</button>
+
+
+  <!-- ###################
+      MODAL AREA
+    ##################### -->
+
+  <div class="modal fade" id="modalPay" tabindex="-1" role="dialog" aria-labelledby="modalPayLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <p class="lead" id="modalPayLabel">Untuk proses pembayaran, sila pilih cara penghantaran atau pengambilan,
+            dan sertakan maklumat-maklumat yang diperlukan.</p>
+          <br />
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <span class="text-danger lead" id="debug"></span>
+          <h5 class="text-info">Pilih cara pendapatan stok:</h5>
+          <form id="formDeliveryMethod">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="inputDelivery" id="inputSelfCollect"
+                value="selfcollect">
+              <label class="form-check-label" for="inputSelfCollect">
+                Pengambilan Sendiri
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="inputDelivery" id="inputPostage" value="postage">
+              <label class="form-check-label" for="inputPostage">
+                Pengantaran Melalui Pos
+              </label>
+            </div>
+          </form>
+          <hr class="">
+          <h5 class="text-info" id="divDeliveryHeading">Butiran Penghantaran:</h5>
+          <form autocomplete="off" id="formOrderDetails">
+            <div class="form-group" id="divDeliveryAddress1">
+              <label for="deliveryAddress1" class="form-label sr-only">Alamat Penuh:</label>
+              <input type="text" class="form-control" id="deliveryAddress1" placeholder="Alamat 1" autocomplete="off">
+            </div>
+            <div class="form-group" id="divDeliveryAddress2">
+              <label for="deliveryAddress2" class="form-label sr-only">Alamat 2:</label>
+              <input type="text" class="form-control" id="deliveryAddress2" placeholder="Alamat 2" autocomplete="false">
+            </div>
+            <div class="form-group row" id="divDeliveryAddress3">
+              <label for="deliveryAddress3" class="form-label sr-only">Alamat 3:</label>
+              <div class="col-sm-2">
+                <input type="text" class="form-control" id="postcode" placeholder="Poskod" autocomplete="false">
+              </div>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="state" placeholder="Negeri" autocomplete="false">
+              </div>
+              <div class="col-sm-4">
+                <select class="form-control" id="country">
+                  <option value="MY" selected>Malaysia</option>
+                  <option value="BN">Brunei Darussalam</option>
+                  <option value="ID">Indoneesia</option>
+                  <option value="SG">Singapura</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" id="divCollectionPlace">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="collectionPlace" id="collectionPlaceMelaka"
+                  value="melaka">
+                <label class="form-check-label" for="collectionPlaceMelaka">
+                  Morhabshi Melaka: <small>No 1, Jalan TBC 16, Taman Bukit Cheng, 75250, Bandar Melaka, Melaka, Malaysia.</small>
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="collectionPlace" id="collectionPlaceSerdang"
+                  value="serdang">
+                <label class="form-check-label" for="collectionPlaceSerdang">
+                  Morhabshi Serdang: <small>Lot 22B, Tingkat 2, jalan 7/2, Taman Serdang Jaya, 43300, Seri Kembangan, Selangor, Malaysia.</small>
+                </label>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-outline-primary" id="btnPay">Bayar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     console.log("Hello from " + window.location.pathname + window.location.search);
 
+    // Initialize modal forms
+    $('#divDeliveryHeading').hide()
+    $('#divDeliveryAddress1').hide()
+    $('#divDeliveryAddress2').hide()
+    $('#divDeliveryAddress3').hide()
+    $('#divCollectionPlace').hide()
+
     firebase.auth().onAuthStateChanged(function (user) {
       if (user) {
 
-        var mainNode = document.getElementById("tableBody");
-        var i = 0;
+        // Modal handling
+        $('#modalPay').on('show.bs.modal', function (event) {
+          var button = $(event.relatedTarget)
+          var service = button.data('service')
+          var details = JSON.parse(JSON.stringify(button.data('detail')))
+          //var details = JSON.parse(detail)
+          var modal = $(this)
+          modal.find('#btnPay').html('Bayar melalui <text class="text-capitalize">' + service + '</text>')
+          //modal.find('#tempBody').text(detail["last_updated"])
+          for (var h = 0; h < details["line_items"].length; h++) {
+            let theMarkup = '<div class="form-group row">' +
+              '<label for="' + 'item_' + h + '" class="col-sm-2 col-form-label">' + details["line_items"][h]["item"] + '</label>' +
+              '<div class="col"><input class="form-control-plaintext" id="' + 'item_' + h + '" value="' + details["line_items"][h]["quantity"] + '" ' +
+              'readonly></div></div>';
+            //modal.find('.modal-body #formOrderDetails').append(theMarkup)
+          } //end for
+        })
 
-        while (mainNode.firstChild) {
-          mainNode.removeChild(mainNode.firstChild);
-        }
+        $('input[name="inputDelivery"]').on('change', function () {
+          $('#divDeliveryHeading').show()
+          if (this.value == 'selfcollect') {
+            $('#divDeliveryHeading').text('Pilihan pengambilan:')
+            $('#divDeliveryAddress1').hide()
+            $('#divDeliveryAddress2').hide()
+            $('#divDeliveryAddress3').hide()
+            $('#divCollectionPlace').show()
+          } else {
+            $('#divDeliveryHeading').text('Alamat untuk kiriman pos:')
+            $('#divDeliveryAddress1').show()
+            $('#divDeliveryAddress2').show()
+            $('#divDeliveryAddress3').show()
+            $('#divCollectionPlace').hide()
+          }
+        })
 
         // Listen for new items added to cart
         db.collection('agents/' + user.email + '/incart/').doc('cart')
           .onSnapshot(function (cartItems) {
+
+            // Populate the table
+            var mainNode = document.getElementById("tableBody");
+            var i = 0;
+
+            while (mainNode.firstChild) {
+              mainNode.removeChild(mainNode.firstChild);
+            }
+
+            $('#btnPayUpay').attr('data-detail', JSON.stringify(cartItems.data()))
+
             if (cartItems.data().line_items) {
               console.log(i + 1);
               console.log(cartItems.data().line_items);
@@ -80,7 +215,7 @@
                 } else {
                   cellItem.innerHTML = 'Premium Stevia Morhabshi (' + eachItem.variant + 'ml)';
                 }
-                cellItem.innerHTML += ' <small><a onclick="deleteItem(\''+user.email+'\',' + i + ')"><i class="text-muted">Remove</i></a></small>';
+                cellItem.innerHTML += ' <small><a onclick="deleteItem(\'' + user.email + '\',' + i + ')"><i class="text-muted">Remove</i></a></small>';
                 cellItem.classList.add("align-middle");
                 cellItem.classList.add("text-capitalize");
 
@@ -128,6 +263,7 @@
 
               // Update GrandTotal pricing in DOM placeholder
               $('#divPayable').text(grandTotal)
+
             } // end if line_items
           }); // end items in cart
       } else {

@@ -4,6 +4,16 @@
 <pre id="divError">
 
 </pre>
+<pre id="plaintext"></pre>
+<p id="hash"></p>
+<br />
+<br />
+<form>
+    <div class="form-group">
+        <textarea class="form-control-plaintext" readonly id="all" rows="20"></textarea>
+    </div>
+</form>
+
 <script>
     $('#divError').text('Ok done at ' + new Date());
 
@@ -12,12 +22,12 @@
     //SHA512(“Merchant Transaction Password” + “Merchant Identifier” +”Customer payable Amount with 2 decimal place”+ ”customer Id”+ “Order Number”)
     let merchantPassword = 'K1eMTlYIlw7hKvDo';
     let merchantIdentifier = 'MORHAMARKETI';
-    let payableAmount = 12.80;
-    let customerId = 'CUSTA';
-    let orderId = 'ORDERA';
-    let theSignature = SHA512(merchantPassword+merchantIdentifier+payableAmount+customerId+orderId);
-    console.log('theSignature is: '+theSignature);
-    console.log('theSignature length is: '+theSignature.length);
+    let payableAmount = '12.80';
+    let customerId = '654321';
+    let orderId = '99999';
+    let theSignature = SHA512(merchantPassword+merchantIdentifier+payableAmount+customerId+orderId).toUpperCase();
+    $('#plaintext').text(merchantPassword+merchantIdentifier+payableAmount+customerId+orderId);
+    $('#hash').text('theSignature is: '+theSignature+' theSignature length is: '+theSignature.length);
     let theData = {
         MERCHANT_IDENTIFIER: merchantIdentifier,
         AMOUNT: payableAmount,
@@ -26,8 +36,8 @@
         CUSTOMER_ID: customerId,
         ORDER_ID: orderId,
         INSTALLMENT: 0,
-        CUSTOMER_NAME: 'Cutsomer Name',
-        CUSTOMER_EMAIL: 'ádam0thman@gmail.com',
+        CUSTOMER_NAME: 'Customer Name',
+        CUSTOMER_EMAIL: 'adam0thman@gmail.com',
         CUSTOMER_MOBILE: '60179881745',
         DEVICE_ID: '60179881745',
         CUSTOMER_COUNTRY: 'MALAYSIA',
@@ -38,11 +48,10 @@
         TXN_SIGNATURE: theSignature,
         PAYMENT_METHOD: 'ALL',
         SOURCE_FROM: 'Web',
-        IS_TEST: 'N'
+        IS_TEST: 'Y'
     };
 
-    console.log('theData:');
-    console.log(jQuery.param(theData));
+    $('#all').val('curl -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "'+jQuery.param(theData)+'" https://uat.upay2us.com/iServeGateway/transaction_window');
     $.ajax({
         url: theUrl,
         type: 'POST',
@@ -63,6 +72,11 @@
             console.log("Error! " + new Date());
         }
     });
+
+    /*
+    MERCHANT_IDENTIFIER=MORHAMARKETI&AMOUNT=12.8&TXN_DESC=test%20by%20Adam&CALLBACK_URL=https%3A%2F%2Fportal.morhabshi.com%2Fcallback.html&CUSTOMER_ID=CUSTA&ORDER_ID=ORDERA&INSTALLMENT=0&CUSTOMER_NAME=Cutsomer%20Name&CUSTOMER_EMAIL=%C3%A1dam0thman%40gmail.com&CUSTOMER_MOBILE=60179881745&DEVICE_ID=60179881745&CUSTOMER_COUNTRY=MALAYSIA&CUSTOMER_BILLING_ADDRESS=Address%20goes%20here&CUSTOMER_SHIPPING_ADDRESS=Address%20billiing%20here&CUSTOMER_SHIPPING_COST=0&CUSTOMER_IP=16.10.11.111&
+    TXN_SIGNATURE=830dc8a710f5f5640ba73d94a8e5eff757f8c01f82b38bb474343546d9067d4169f8731ec6e04766fb57d3dd08eeae275858d38b94445905f4812543b966f82d&PAYMENT_METHOD=ALL&SOURCE_FROM=Web&IS_TEST=N
+    */
 
     /*
 * Secure Hash Algorithm (SHA512)

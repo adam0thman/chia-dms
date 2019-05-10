@@ -1,0 +1,59 @@
+<div id="row">
+    <h4 class="text-info"><a class="text-muted" href="main.html"><i class="far fa-id-badge"></i></a>
+        <i class="fas fa-chevron-right text-secondary"></i>
+        <i class="fas fa-id-card text-secondary"></i> <span class="text-secondary">Profil Saya</span>
+    </h4>
+</div>
+<hr>
+<p class="lead">Sila pastikan maklumat yang anda diri anda adalah tepat.</p>
+<form autocomplete="off">
+    <div class="form-group row">
+        <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
+        <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" id="inputEmail" value="">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="inputFullname" class="col-sm-2 col-form-label">Nama</label>
+        <div class="col">
+            <input type="text" class="form-control" placeholder="Nama First">
+        </div>
+        <div class="col">
+            <input type="text" class="form-control" placeholder="Last name">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="inputAddress1" class="col-sm-2 col-form-label">Alamat Penuh</label>
+        <div class="col">
+            <input type="text" class="form-control" id="inputAddress1" placeholder="Address 1">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="inputAddress2" class="col-sm-2 col-form-label"></label>
+        <div class="col">
+            <input type="text" class="form-control" id="inputAddress2" placeholder="Address 2">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="inputPostcode" class="col-sm-2 col-form-label"></label>
+        <div class="col">
+            <input type="text" class="form-control" id="inputPostcode" placeholder="Poskod">
+        </div>
+        <div class="col">
+            <input type="text" class="form-control" id="inputState" placeholder="State">
+        </div>
+        <div class="col">
+            <input type="text" class="form-control" id="inputCountry" placeholder="Country">
+        </div>
+    </div>
+</form>
+
+<script>
+    console.log("Hello from " + window.location.pathname + window.location.search);
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            $('#inputEmail').val(user.email);
+        }
+    });
+</script>
