@@ -59,8 +59,8 @@
           </button>
         </div>
         <div class="modal-body">
-          <span class="text-danger lead" id="debug"></span>
-          <h5 class="text-info">Pilih cara pendapatan stok:</h5>
+          <span class="text-danger lead" id="debug">AYAM</span>
+          <h5 class="text-info">Pilih cara pengambilan stok:</h5>
           <form id="formDeliveryMethod">
             <div class="form-check">
               <input class="form-check-input" type="radio" name="inputDelivery" id="inputSelfCollect"
@@ -109,17 +109,41 @@
                 <input class="form-check-input" type="radio" name="collectionPlace" id="collectionPlaceMelaka"
                   value="melaka">
                 <label class="form-check-label" for="collectionPlaceMelaka">
-                  Morhabshi Melaka: <small>No 1, Jalan TBC 16, Taman Bukit Cheng, 75250, Bandar Melaka, Melaka, Malaysia.</small>
+                  Morhabshi Melaka: <small>No 1, Jalan TBC 16, Taman Bukit Cheng, 75250, Bandar Melaka, Melaka,
+                    Malaysia.</small>
                 </label>
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="radio" name="collectionPlace" id="collectionPlaceSerdang"
                   value="serdang">
                 <label class="form-check-label" for="collectionPlaceSerdang">
-                  Morhabshi Serdang: <small>Lot 22B, Tingkat 2, jalan 7/2, Taman Serdang Jaya, 43300, Seri Kembangan, Selangor, Malaysia.</small>
+                  Morhabshi Serdang: <small>Lot 22B, Tingkat 2, jalan 7/2, Taman Serdang Jaya, 43300, Seri Kembangan,
+                    Selangor, Malaysia.</small>
                 </label>
               </div>
             </div>
+          </form>
+          <form id="formUpaySubmission" method="post" action="https://uat.upay2us.com/iServeGateway/transaction_window">
+            <input type="hidden" name="MERCHANT_IDENTIFIER" value="MORHAMARKETI">
+            <input type="hidden" name="AMOUNT" value="12.80">
+            <input type="hidden" name="TXN_DESC" value="adam is testing">
+            <input type="hidden" name="CALLBACK_URL" value="https://portal.morhabshi.com/callback.html">
+            <input type="hidden" name="CUSTOMER_ID" value="654321">
+            <input type="hidden" name="ORDER_ID" value="99999">
+            <input type="hidden" name="INSTALLMENT" value="0">
+            <input type="hidden" name="CUSTOMER_NAME" value="Adam Othman test">
+            <input type="hidden" name="CUSTOMER_EMAIL" value="adam0thman@gmail.com">
+            <input type="hidden" name="CUSTOMER_MOBILE" value="60179881745">
+            <input type="hidden" name="DEVICE_ID" value="60179881745">
+            <input type="hidden" name="CUSTOMER_COUNTRY" value="MY">
+            <input type="hidden" name="CUSTOMER_BILLING_ADDRESS" value="123, Boulevard, Malaysia.">
+            <input type="hidden" name="CUSTOMER_SHIPPING_ADDRESS" value="123, Boulevard, Malaysia.">
+            <input type="hidden" name="CUSTOMER_SHIPPING_COST" value="0.00">
+            <input type="hidden" name="CUSTOMER_IP" value="210.5.47.92">
+            <input type="hidden" name="TXN_SIGNATURE" value="85fe4764839a59e3d4ee06eaaf4dd7c47c1e84a326c2b8777f396104430cbf6dc0b0ac73d204b81b4fd1b7f0734287739586dbac1453fc38d643fbb9abb81735">
+            <input type="hidden" name="PAYMENT_METHOD" value="ALL">
+            <input type="hidden" name="SOURCE_FROM" value="upay-logo-web">
+            <input type="hidden" name="IS_TEST" value="Y">
           </form>
         </div>
         <div class="modal-footer">
@@ -143,6 +167,22 @@
     firebase.auth().onAuthStateChanged(function (user) {
       if (user) {
 
+        $('#btnPay').on('click', function () {
+          const deliveryMethod = $('input[name="inputDelivery"]:checked').val();
+          $('#formUpaySubmission').submit();
+          /*
+          db.collection('purchases').doc()
+            .set({
+              delivery_method: deliveryMethod
+            }).then(function () {
+              console.log("Successfully saved!");
+            }).catch(function (e) {
+              console.log("Error savign data:", e);
+            });
+            */
+
+        })
+
         // Modal handling
         $('#modalPay').on('show.bs.modal', function (event) {
           var button = $(event.relatedTarget)
@@ -164,7 +204,7 @@
         $('input[name="inputDelivery"]').on('change', function () {
           $('#divDeliveryHeading').show()
           if (this.value == 'selfcollect') {
-            $('#divDeliveryHeading').text('Pilihan pengambilan:')
+            $('#divDeliveryHeading').text('Tempat pengambilan:')
             $('#divDeliveryAddress1').hide()
             $('#divDeliveryAddress2').hide()
             $('#divDeliveryAddress3').hide()
