@@ -59,9 +59,13 @@
           </button>
         </div>
         <div class="modal-body">
-          <span class="text-danger lead" id="debug">AYAM</span>
+          <p class="text-danger" id="debug">AYAM</p>
           <h5 class="text-info">Pilih cara pengambilan stok:</h5>
           <form id="formDeliveryMethod">
+            <div class="form-group">
+              <label for="dummyOrderid" class="form-label sr-only">Dummy Order Id:</label>
+              <input type="text" class="form-control" id="dummyOrderid" value="100001" autocomplete="off">
+            </div>
             <div class="form-check">
               <input class="form-check-input" type="radio" name="inputDelivery" id="inputSelfCollect"
                 value="selfcollect">
@@ -125,11 +129,12 @@
           </form>
           <form id="formUpaySubmission" method="post" action="https://uat.upay2us.com/iServeGateway/transaction_window">
             <input type="hidden" name="MERCHANT_IDENTIFIER" value="MORHAMARKETI">
-            <input type="hidden" name="AMOUNT" value="12.80">
+            <input type="hidden" name="AMOUNT" value='12.80'>
             <input type="hidden" name="TXN_DESC" value="adam is testing">
-            <input type="hidden" name="CALLBACK_URL" value="https://portal.morhabshi.com/callback.html">
+            <input type="hidden" name="CALLBACK_URL"
+              value="https://us-central1-morhabshi-e9680.cloudfunctions.net/upayHandler">
             <input type="hidden" name="CUSTOMER_ID" value="654321">
-            <input type="hidden" name="ORDER_ID" value="99999">
+            <input type="hidden" name="ORDER_ID" value="">
             <input type="hidden" name="INSTALLMENT" value="0">
             <input type="hidden" name="CUSTOMER_NAME" value="Adam Othman test">
             <input type="hidden" name="CUSTOMER_EMAIL" value="adam0thman@gmail.com">
@@ -140,9 +145,9 @@
             <input type="hidden" name="CUSTOMER_SHIPPING_ADDRESS" value="123, Boulevard, Malaysia.">
             <input type="hidden" name="CUSTOMER_SHIPPING_COST" value="0.00">
             <input type="hidden" name="CUSTOMER_IP" value="210.5.47.92">
-            <input type="hidden" name="TXN_SIGNATURE" value="85fe4764839a59e3d4ee06eaaf4dd7c47c1e84a326c2b8777f396104430cbf6dc0b0ac73d204b81b4fd1b7f0734287739586dbac1453fc38d643fbb9abb81735">
+            <input type="hidden" name="TXN_SIGNATURE" value="">
             <input type="hidden" name="PAYMENT_METHOD" value="ALL">
-            <input type="hidden" name="SOURCE_FROM" value="upay-logo-web">
+            <input type="hidden" name="SOURCE_FROM" value="web">
             <input type="hidden" name="IS_TEST" value="Y">
           </form>
         </div>
@@ -167,8 +172,26 @@
     firebase.auth().onAuthStateChanged(function (user) {
       if (user) {
 
+        $('#dummyOrderid').on('change', function () {
+          let dummyOrderid = $('#dummyOrderid').val()
+          let dummyAmount = $('input[name="AMOUNT"]').val()
+          let fullUrl = 'https://us-central1-morhabshi-e9680.cloudfunctions.net/generateUpayHash?customerid=654321&amount=' + dummyAmount + '&orderid=' + dummyOrderid;
+          $.getJSON(fullUrl, function (result) {
+            console.log("For Orderid "+dummyOrderid+" result: "+JSON.stringify(result));
+            $.each(result, function (i, field) {
+              $("#debug").text(field);
+              $('input[name="ORDER_ID"]').val(dummyOrderid)
+              $('input[name="TXN_SIGNATURE"]').val(field)
+            });
+          });
+        })
+
         $('#btnPay').on('click', function () {
           const deliveryMethod = $('input[name="inputDelivery"]:checked').val();
+          console.log("Sebelum send AMOUNT: "+$('input[name="AMOUNT"]').val());
+          console.log("Sebelum send: "+$('input[name="TXN_SIGNATURE"]').val());
+          console.log("Sebelum send length: "+$('input[name="TXN_SIGNATURE"]').val().length);
+          console.log("Sebelum send ORDER_ID: "+$('input[name="ORDER_ID"]').val());
           $('#formUpaySubmission').submit();
           /*
           db.collection('purchases').doc()
@@ -180,7 +203,6 @@
               console.log("Error savign data:", e);
             });
             */
-
         })
 
         // Modal handling
