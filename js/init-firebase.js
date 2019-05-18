@@ -29,6 +29,7 @@ console.log("pageAdmin is: " + pageAdmin);
 function callLogout() {
   firebase.auth().signOut().then(function () {
     console.log("User has been Signed Out!");
+    sessionStorage.clear();
     window.location.replace(pageURL + pageLogin);
   }).catch(function (e) {
     console.log("Error signing out:", e);

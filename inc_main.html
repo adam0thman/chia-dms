@@ -97,11 +97,6 @@
   $('#nav-admin-tab').hide()
   $('#nav-admin').hide()
 
-  // Grab the sessionStorage
-  let localUserData = JSON.parse(sessionStorage.getItem('localUserData'));
-  console.log('Fullname: ' + localUserData["fullname"]);
-  $('#headerFullname').text(localUserData["fullname"])
-
   firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
 
@@ -142,7 +137,7 @@
               '<a href="#" class="text-muted" data-toggle="tooltip" data-placement="top" title="Generate QR Code"><i class="fas fa-qrcode"></i></a>' +
               '&nbsp;<a href="#" class="text-muted" data-toggle="tooltip" data-placement="top" title="Add New Document"><i class="fas fa-file-medical"></i></a>' +
               '</td>' +
-              '<td><a href="#" data-toggle="modal" data-target="#mdlCollDetails" data-id="' + eachColl.data().coll_id + '" '+
+              '<td><a href="#" data-toggle="modal" data-target="#mdlCollDetails" data-id="' + eachColl.data().coll_id + '" ' +
               'data-storage="' + eachColl.data().coll_storagename + '" data-jobref="' + eachColl.data().coll_jobref + '">' + eachColl.data().coll_id + '</a></td>' +
               '<td>' + eachColl.data().coll_desc + '</td>' +
               '<td>' + eachColl.data().coll_storagename + '</td>' +
@@ -175,7 +170,7 @@
         var storage = button.data('storage')
         var jobref = button.data('jobref')
         var modal = $(this)
-        modal.find('.modal-title').html('Details for collection <span class="text-info">'+id+'</span>.')
+        modal.find('.modal-title').html('Details for collection <span class="text-info">' + id + '</span>.')
         modal.find('#viewCollStorageName').val(storage)
         modal.find('#viewCollJobRef').val(jobref)
         //modal.find('.modal-body input').val(recipient)
@@ -209,4 +204,13 @@
       console.log("User NOT signed in.");
     }
   });
+
+  // Grab the sessionStorage after 2 seconds
+  setTimeout(function () {
+    let localUserData = JSON.parse(sessionStorage.getItem('localUserData'));
+    console.log('Fullname: ' + localUserData["fullname"]);
+    $('#headerFullname').text(localUserData["fullname"])
+  }, 2000);
+
+
 </script>
