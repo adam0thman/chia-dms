@@ -9,15 +9,16 @@
         </div>
       </div>
       <div class="form-group row">
-          <label for="docuCode" class="col-sm-2 col-form-label">Shortcode</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" id="docuCode" placeholder="Ex: TD1">
-          </div>
+        <label for="docuCode" class="col-sm-2 col-form-label">Shortcode</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="docuCode" placeholder="Ex: TD1">
         </div>
+      </div>
       <div class="form-group row">
         <label for="docuDesc" class="col-sm-2 col-form-label">Description</label>
         <div class="col-sm-10">
-          <textarea type="text" class="form-control" id="docuDesc" placeholder="Ex: This document type is designated for technical drawings." rows="3"></textarea>
+          <textarea type="text" class="form-control" id="docuDesc"
+            placeholder="Ex: This document type is designated for technical drawings." rows="3"></textarea>
         </div>
       </div>
       <div class="form-group row">
@@ -160,8 +161,8 @@
             <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon2">+</span>
             </div>
-            <input type="number" class="form-control" id="userMobile" placeholder="Ex: 60197156651"
-              aria-label="Mobile" aria-describedby="basic-addon2">
+            <input type="number" class="form-control" id="userMobile" placeholder="Ex: 60197156651" aria-label="Mobile"
+              aria-describedby="basic-addon2">
           </div>
         </div>
       </div>
@@ -195,7 +196,60 @@
   </div>
 </div>
 
-
+<!-- ################## -->
+<!-- MODAL -->
+<div class="modal fade" id="mdlEditUser" tabindex="-1" role="dialog" aria-labelledby="mdlEditUserLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mdlEditUserLabel">Edit User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="formEditUser">
+          <div class="form-group row">
+            <label for="editUserName" class="col-sm-2 col-form-label">Fullname</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="editUserName" placeholder="Ex: John Doe">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="editUserEmail" class="col-sm-2 col-form-label">Email</label>
+            <div class="col-sm-10">
+              <input type="email" class="form-control-plaintext" id="editUserEmail" placeholder="Ex: JohnDoe@company.com" readonly>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="editUserMobile" class="col-sm-2 col-form-label">Mobile</label>
+            <div class="col-sm-10">
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="basic-addon3">+</span>
+                </div>
+                <input type="number" class="form-control" id="editUserMobile" placeholder="Ex: 60197156651"
+                  aria-label="Mobile" aria-describedby="basic-addon3">
+              </div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="editUserDepartment" class="col-sm-2 col-form-label">Department</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="editUserDepartment" placeholder="Ex: HR">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="btnEditUser">Save User</button>
+        <button class="btn btn-danger" id="btnDeleteUser"><i class="far fa-trash-alt"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
   // #############################
@@ -282,9 +336,22 @@
     $('#locationManager').append('<option>Choose a user..</option>')
     let u = 0;
     allUsers.forEach(function (eachUser) {
-      $('#userTable').append('<tr><td>' + (u + 1) + '</td><td>' + eachUser.data().fullname + '</td><td>'+eachUser.data().department+'</td></tr>')
-      $('#locationManager').append('<option value="'+eachUser.id+'|'+eachUser.data().fullname+'">'+eachUser.data().fullname+' ('+eachUser.data().email+')</option>');
+      $('#userTable').append('<tr><td>' + (u + 1) + '</td><td><a href="#" data-toggle="modal" data-target="#mdlEditUser" '+
+        'data-fullname="' + eachUser.data().fullname + '" data-department="' + eachUser.data().department + '">' + eachUser.data().fullname + '</a></td>'+
+        '<td>' + eachUser.data().department + '</td></tr>')
+      $('#locationManager').append('<option value="' + eachUser.id + '|' + eachUser.data().fullname + '">' + eachUser.data().fullname + ' (' + eachUser.data().email + ')</option>');
       u++;
     })
+  })
+
+  $('#mdlEditUser').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var fullname = button.data('fullname') // Extract info from data-* attributes
+    var department = button.data('department')
+    var modal = $(this)
+    modal.find('.modal-title').html('Edit user <span class="text-info"> ' + fullname + '</span>')
+    modal.find('#editUserFullname').val(fullname)
+    modal.find('#editUserDepartment').val(department)
+    //modal.find('.modal-body input').val(recipient)
   })
 </script>
