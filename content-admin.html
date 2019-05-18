@@ -1,0 +1,290 @@
+<div class="row">
+  <div class="col-md-8">
+    <form id="formDocuType">
+      <h5 class="text-info"><i class="fas fa-file-medical"></i> Add New Document Type</h5>
+      <div class="form-group row">
+        <label for="docuName" class="col-sm-2 col-form-label">Name</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="docuName" placeholder="Ex: Technical Drawing">
+        </div>
+      </div>
+      <div class="form-group row">
+          <label for="docuCode" class="col-sm-2 col-form-label">Shortcode</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="docuCode" placeholder="Ex: TD1">
+          </div>
+        </div>
+      <div class="form-group row">
+        <label for="docuDesc" class="col-sm-2 col-form-label">Description</label>
+        <div class="col-sm-10">
+          <textarea type="text" class="form-control" id="docuDesc" placeholder="Ex: This document type is designated for technical drawings." rows="3"></textarea>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-sm-10">
+          <button class="btn btn-primary" id="btnAddDocuType">Add Document Type</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-4">
+    <h5 class="text-info">Existing Document Type</h5>
+    <table class="table table-sm table-striped">
+      <caption>Existing Document Type</caption>
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Code</th>
+          <th scope="col">Doc. Type</th>
+        </tr>
+      </thead>
+      <tbody id="docuTypeTable">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<hr class="mb-12">
+
+<div class="row">
+  <div class="col-md-8">
+    <form id="formLocation">
+      <h5 class="text-info"><i class="fas fa-map-marker-alt"></i> Add New Storage Location</h5>
+      <div class="form-group row">
+        <label for="locationName" class="col-sm-2 col-form-label">Name</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="locationName" placeholder="Ex: Warehouse 3, Bandar Utama">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="locationManager" class="col-sm-2 col-form-label">Manager</label>
+        <div class="col-sm-10">
+          <select class="form-control" id="locationManager">
+
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="locationContact" class="col-sm-2 col-form-label">Contact</label>
+        <div class="col-sm-10">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1">+</span>
+            </div>
+            <input type="number" class="form-control" id="locationContact" placeholder="Ex: 0371566651"
+              aria-label="Contact" aria-describedby="basic-addon1">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="locationAddress" class="col-sm-2 col-form-label">Address</label>
+        <div class="col-sm-10">
+          <textarea class="form-control" id="locationAddress" placeholder="Ex: Lot 318, Taman Kosas Utaam, Selangor."
+            rows="3"></textarea>
+        </div>
+      </div>
+      <fieldset class="form-group">
+        <div class="row">
+          <legend class="col-form-label col-sm-2 pt-0">Type</legend>
+          <div class="col-sm-10">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="locationType" id="locationTypeWarehouse"
+                value="warehouse">
+              <label class="form-check-label" for="locationTypeWarehouse">
+                Warehouse
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="locationType" id="locationTypeOffice" value="office">
+              <label class="form-check-label" for="locationTypeOffice">
+                Unit Office
+              </label>
+            </div>
+            <div class="form-check disabled">
+              <input class="form-check-input" type="radio" name="locationType" id="locationTypeClient" value="client">
+              <label class="form-check-label" for="locationTypeClient">
+                Client Site Office
+              </label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="form-group row">
+        <div class="col-sm-10">
+          <button class="btn btn-primary" id="btnAddLocation">Add Location</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-4">
+    <h5 class="text-info">Existing Storage Locations</h5>
+    <table class="table table-sm table-striped">
+      <caption>Existing Storage Locations</caption>
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Location</th>
+        </tr>
+      </thead>
+      <tbody id="locationTable">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<hr class="mb-12">
+
+<div class="row">
+  <div class="col-md-8">
+    <form id="formUser">
+      <h5 class="text-info"><i class="fas fa-users"></i> Add New User</h5>
+      <div class="form-group row">
+        <label for="userName" class="col-sm-2 col-form-label">Fullname</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="userName" placeholder="Ex: John Doe">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="userEmail" class="col-sm-2 col-form-label">Email</label>
+        <div class="col-sm-10">
+          <input type="email" class="form-control" id="userEmail" placeholder="Ex: JohnDoe@company.com">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="userMobile" class="col-sm-2 col-form-label">Mobile</label>
+        <div class="col-sm-10">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon2">+</span>
+            </div>
+            <input type="number" class="form-control" id="userMobile" placeholder="Ex: 60197156651"
+              aria-label="Mobile" aria-describedby="basic-addon2">
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="userDepartment" class="col-sm-2 col-form-label">Department</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="userDepartment" placeholder="Ex: HR">
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-sm-10">
+          <button class="btn btn-primary" id="btnAddUser">Add User</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-4">
+    <h5 class="text-info">Existing Users</h5>
+    <table class="table table-sm table-striped">
+      <caption>Existing Users</caption>
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">User</th>
+          <th scope="col">Dept.</th>
+        </tr>
+      </thead>
+      <tbody id="userTable">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+<script>
+  // #############################
+  // Process for Add Docu Type
+  // #############################
+  $('#btnAddDocuType').on('click', function (event) {
+    event.preventDefault();
+    db.collection("documenttypes").doc()
+      .set({
+        docu_name: $('#docuName').val(),
+        docu_code: $('#docuCode').val(),
+        docu_desc: $('#docuDesc').val(),
+        lastupdate: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function () {
+        console.log("Successfully saved new docuType!");
+        $('#formDocuType').trigger("reset");
+      }).catch(function (e) {
+        console.log("Error saving new docuType:", e);
+      });
+  })
+
+  db.collection('documenttypes').onSnapshot(function (allTypes) {
+    $('#docuTypeTable').empty()
+    let u = 0;
+    allTypes.forEach(function (eachType) {
+      $('#docuTypeTable').append('<tr><td>' + (u + 1) + '</td><td>' + eachType.data().docu_code + '</td><td>' + eachType.data().docu_name + '</td></tr>')
+      u++;
+    })
+  })
+
+  // #############################
+  // Process for Add Location
+  // #############################
+  $('#btnAddLocation').on('click', function (event) {
+    event.preventDefault();
+    db.collection("storagelocations").doc()
+      .set({
+        location_name: $('#locationName').val(),
+        location_pic: $('#locationManager').val(),
+        location_contact: $('#locationContact').val(),
+        location_address: $('#locationAddress').val(),
+        location_type: $('input[name=locationType]:checked').val(),
+        lastupdate: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function () {
+        console.log("Successfully saved new location!");
+        $('#formLocation').trigger("reset");
+      }).catch(function (e) {
+        console.log("Error saving new location:", e);
+      });
+  })
+
+  db.collection('storagelocations').onSnapshot(function (allLocations) {
+    $('#locationTable').empty()
+    let u = 0;
+    allLocations.forEach(function (loc) {
+      $('#locationTable').append('<tr><td>' + (u + 1) + '</td><td>' + loc.data().location_name + '</td></tr>')
+      u++;
+    })
+  })
+
+  // #############################
+  // Process for Add User
+  // #############################
+  $('#btnAddUser').on('click', function (event) {
+    event.preventDefault();
+    db.collection("users").doc($('#userEmail').val())
+      .set({
+        fullname: $('#userName').val(),
+        email: $('#userEmail').val(),
+        mobile: $('#userMobile').val(),
+        department: $('#userDepartment').val(),
+        lastupdate: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function () {
+        console.log("Successfully saved new user!");
+        $('#formUser').trigger("reset");
+      }).catch(function (e) {
+        console.log("Error saving new user:", e);
+      });
+  })
+
+  db.collection('users').onSnapshot(function (allUsers) {
+    $('#userTable').empty()
+    $('#locationManager').empty()
+    $('#locationManager').append('<option>Choose a user..</option>')
+    let u = 0;
+    allUsers.forEach(function (eachUser) {
+      $('#userTable').append('<tr><td>' + (u + 1) + '</td><td>' + eachUser.data().fullname + '</td><td>'+eachUser.data().department+'</td></tr>')
+      $('#locationManager').append('<option value="'+eachUser.id+'|'+eachUser.data().fullname+'">'+eachUser.data().fullname+' ('+eachUser.data().email+')</option>');
+      u++;
+    })
+  })
+</script>

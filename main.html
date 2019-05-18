@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Keluarga MORHA</title>
+  <title>DocuManage | DMS</title>
 
   <!-- Bootstrap core CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
@@ -32,9 +32,9 @@
     <!-- FOOTER -->
     <footer class="container">
       <hr class="mb-12">
-      <p class="float-right"><a href="#" class="text-muted" id="btn-logout">Daftar Keluar</a></p>
-      <p>&copy; 2010-2019 Jasabyte Technologies Sdn Bhd &middot; <a href="privacy.html">Polisi Data Privasi</a> &middot;
-        <a href="#">Terma Pengunaan</a></p>
+      <p class="float-right">(Not <i id="footerUsername"></i>?)<a href="#" class="text-muted" id="btn-logout"> Logout</a></p>
+      <p>&copy; 2010-2019 Jasabyte Technologies Sdn Bhd &middot; <a href="privacy.html">Data Privacy Policy</a> &middot;
+        <a href="#">Usage Terms</a></p>
     </footer>
 
   </main>
@@ -48,10 +48,10 @@
     crossorigin="anonymous"></script>
   <!-- Firebase Initi
     ================================================== -->
-  <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.0.2/firebase-app.js"></script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/5.9.1/firebase.js"></script> -->
+  <script src="https://www.gstatic.com/firebasejs/6.0.2/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.0.2/firebase-auth.js"></script>
   <script src="./js/init-firebase.js"></script>
   <!-- Main Scirptiing
     ================================================= -->
@@ -101,7 +101,7 @@
         console.log('Loading ' + getParameterByName('v') + '..');
       } else {
         console.log('Defaulting to Dashboard..');
-        pageToLoad = 'inc_dashboard.html';
+        pageToLoad = 'inc_main.html';
       }
       // Load the actual content page
       $('#page-content').load(pageToLoad);
@@ -118,56 +118,19 @@
     firebase.auth().onAuthStateChanged(function (user) {
       if (user) {
 
-        console.log("Hello! i am in MAIN and i am logged in!");
-        console.log(user);
-
-        if (!user.isAnonymous) {
-          db.collection("agents/").doc(user.email)
-            .update({
-              isAnonymous: {
-                status: user.isAnonymous,
-                lastchange: firebase.firestore.FieldValue.serverTimestamp()
-              }
-            }).then(function () {
-              console.log("Done updating isAnonymous status!");
-            }).catch(function (e) {
-              console.log("Error updating isAnonymous status: ", e);
-            });
-        }
-
-        if (user.email && !user.emailVerified && !user.isAnonymous) {
-          db.collection("agents").doc(user.email)
-            .get().then(function (agentData) {
-              console.log(agentData);
-              if (!agentData.data().emailVerified.status && !agentData.data().emailVerified["emailSent"]) {
-                sendVerificationEmail();
-              }
-            })
-        }
-
+        db.collection("users").doc(user.email)
+        .onSnapshot(function(userDoc) {
+          console.log('Setting user storage.');
+          sessionStorage.setItem('localUserData', JSON.stringify(userDoc.data()));
+          $('#footerUsername').text(userDoc.data().fullname)
+          //$('#headerFullname').text(userDoc.data().fullname)
+        });
+        
       } else {
         console.log("User NOT signed in!");
-        window.location.replace(pageURL);
+        //window.location.replace(pageURL);
       }
     });
-
-    function sendVerificationEmail() {
-      var userNow = firebase.auth().currentUser;
-      userNow.sendEmailVerification().then(function () {
-        // Email sent.
-        console.log("Verification email sent!");
-
-        db.collection("agents").doc(user.email)
-          .update({
-            "isVerified.emailSent": true
-          }).catch(function(e) {
-            console.log("Error updating emailSent status:",e);
-          })
-      }).catch(function (error) {
-        // An error happened.
-        console.log("Errro sending verification email:", error);
-      });
-    }
 
     // TYbale filter
     (function (document) {

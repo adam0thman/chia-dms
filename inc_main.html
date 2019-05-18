@@ -1,0 +1,199 @@
+<small class="text-muted float-right">Logged in as <span class="text-dark" id="headerFullname"></span> <a href="#"
+    data-toggle="tooltip" data-placement="bottom" title="Logout" onclick="callLogout();"><i
+      class="fas fa-sign-out-alt text-muted"></i></a></small>
+<h2 class="display-4"><span id="mainPageHeader">Dashboard</span></h2>
+<hr class="mb-6">
+
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="nav-item nav-link active" id="nav-dashboard-tab" data-toggle="tab" href="#nav-dashboard" role="tab"
+      aria-controls="nav-dashboard" aria-selected="true">Dashboard</a>
+    <a class="nav-item nav-link" id="nav-listing-tab" data-toggle="tab" href="#nav-listing" role="tab"
+      aria-controls="nav-listing" aria-selected="false">Collection+Documents</a>
+    <a class="nav-item nav-link" id="nav-admin-tab" data-toggle="tab" href="#nav-admin" role="tab"
+      aria-controls="nav-admin" aria-selected="false">Administration Console</a>
+  </div>
+</nav>
+
+<div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade show active" id="nav-dashboard" role="tabpanel" aria-labelledby="nav-dashboard-tab">
+    <script>
+      $('#nav-dashboard').load('content-main.html');
+    </script>
+  </div>
+  <div class="tab-pane fade" id="nav-listing" role="tabpanel" aria-labelledby="nav-listing-tab">
+    <script>
+      $('#nav-listing').load('content-listing.html');
+    </script>
+  </div>
+  <div class="tab-pane fade" id="nav-admin" role="tabpanel" aria-labelledby="nav-admin-tab">
+    <br />
+    <div id="admin-tab-content"></div>
+  </div>
+</div>
+
+<!-- ##################### -->
+<!--     MODAL SECTIONS    -->
+<!-- ##################### -->
+<div class="modal fade" id="mdlAddNewCollection" tabindex="-1" role="dialog" aria-labelledby="mdlAddNewCollectionTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mdlAddNewCollectionTitle">Add New Collection</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="formNewColl">
+          <div class="form-group">
+            <label for="newCollId">Collection ID</label>
+            <input type="email" class="form-control" id="newCollId" placeholder="Ex: PROJID-YEAR-#">
+          </div>
+          <div class="form-group">
+            <label for="newCollJobRef">Sales Job Reference</label>
+            <input type="email" class="form-control" id="newCollJobRef" placeholder="Ex: #JOB-12345">
+          </div>
+          <div class="form-group">
+            <label for="newCollDesc">Collection Description</label>
+            <textarea class="form-control" id="newCollDesc" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="newCollStorageLocation">Primary Storage Location</label>
+            <select class="form-control" id="newCollStorageLocation">
+
+            </select>
+          </div>
+          <!--
+          <div class="form-group">
+            <label for="newCollTag">Collection Taq</label>
+            <select multiple class="form-control" id="newCollTag">
+              <option>sample1</option>
+              <option>sample2</option>
+              <option>sample3</option>
+              <option>tagA</option>
+              <option>tagB</option>
+              <option>tagC</option>
+            </select>
+          </div>
+          -->
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success" id="btnAddNewColl">Add New</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+  console.log("Hello from " + window.location.pathname + window.location.search);
+
+  // Hide Admin tabs by default
+  $('#nav-admin-tab').hide()
+  $('#nav-admin').hide()
+
+  // Grab the sessionStorage
+  let localUserData = JSON.parse(sessionStorage.getItem('localUserData'));
+  console.log('Fullname: ' + localUserData["fullname"]);
+  $('#headerFullname').text(localUserData["fullname"])
+
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (user) {
+
+      $('#nav-dashboard-tab').on('click', function () {
+        $('#mainPageHeader').text('Dashboard')
+      })
+
+      $('#nav-listing-tab').on('click', function () {
+        $('#mainPageHeader').text('Collection+Documents')
+      })
+
+      $('#nav-admin-tab').on('click', function () {
+        $('#mainPageHeader').text('Administration Console')
+      })
+
+      db.collection("auth_admin").doc(user.email)
+        .onSnapshot(function (data) {
+          if (data.exists) {
+            $('#admin-tab-content').load('content-admin.html');
+            $('#nav-admin-tab').show()
+            $('#nav-admin').show()
+          } else {
+            $('#nav-admin-tab').remove()
+            $('#nav-admin').remove()
+          }
+        });
+
+      // Populate collection listing for non-archived collections
+      db.collection('collections').where('archived', '==', false)
+        .onSnapshot(function (allCollection) {
+          $('#collectionTableBody').empty()
+          let h = 0;
+          allCollection.forEach(function (eachColl) {
+            $('#collectionTableBody').append(
+              '<tr>' +
+              '<td class="text-center align-middle">' + (h + 1) + '</td>' +
+              '<td class="text-center align-middle">'+
+                '<a href="#" class="text-muted" data-toggle="tooltip" data-placement="top" title="Generate QR Code"><i class="fas fa-qrcode"></i></a>'+
+                '&nbsp;<a href="#" class="text-muted" data-toggle="tooltip" data-placement="top" title="Add New Document"><i class="fas fa-folder-plus"></i></a>'+
+                '</td>' +
+              '<td>' + eachColl.data().coll_id + '</td>' +
+              '<td>' + eachColl.data().coll_desc + '</td>' +
+              '<td>' + eachColl.data().coll_storagename + '</td>' +
+              '</tr>')
+            $(function () {
+              $('[data-toggle="tooltip"]').tooltip()
+            })
+            h++;
+          })
+        })
+
+
+      // Modal actiosn for #mdlAddNewCollection
+      $('#mdlAddNewCollection').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget)
+        var recipient = button.data('whatever')
+        var modal = $(this)
+        //modal.find('.modal-body input').val(recipient)
+        db.collection('storagelocations').onSnapshot(function (allLocations) {
+          $('#newCollStorageLocation').empty()
+          allLocations.forEach(function (loc) {
+            $('#newCollStorageLocation').append('<option value="' + loc.id + '|' + loc.data().location_name + '">' + loc.data().location_name + ' (' + upFirst(loc.data().location_type) + ')' + '</option>')
+          })
+        })
+      })
+
+      $('#btnAddNewColl').on('click', function () {
+        db.collection('collections').doc()
+          .set({
+            coll_id: $('#newCollId').val(),
+            coll_desc: $('#newCollDesc').val(),
+            coll_jobref: $('#newCollJobRef').val(),
+            coll_storageid: $('#newCollStorageLocation').val().split('|')[0],
+            coll_storagename: $('#newCollStorageLocation').val().split('|')[1],
+            archived: false,
+            addedby: user.email,
+            lastupdate: firebase.firestore.FieldValue.serverTimestamp()
+          }).then(function () {
+            console.log("Done saving new collection!");
+            $('#formNewColl').trigger('reset')
+            $('#mdlAddNewCollection').modal('hide')
+          }).catch(function (err) {
+            console.log("Error saving new collection:".err);
+          })
+      })
+
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      })
+
+    } else {
+      console.log("User NOT signed in.");
+    }
+  });
+</script>
