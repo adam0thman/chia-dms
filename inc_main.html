@@ -96,6 +96,7 @@
   // Hide Admin tabs by default
   $('#nav-admin-tab').hide()
   $('#nav-admin').hide()
+  $('#btnSaveEditCollection').hide()
 
   firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
@@ -118,9 +119,11 @@
             $('#admin-tab-content').load('content-admin.html');
             $('#nav-admin-tab').show()
             $('#nav-admin').show()
+            $('#btnSaveEditCollection').show()
           } else {
             $('#nav-admin-tab').remove()
             $('#nav-admin').remove()
+            $('#btnSaveEditCollection').remove()
           }
         });
 
@@ -134,8 +137,15 @@
               '<tr>' +
               '<td class="text-center align-middle">' + (h + 1) + '</td>' +
               '<td class="text-center align-middle">' +
-              '<a href="#" class="text-muted" data-toggle="tooltip" data-placement="top" title="Generate QR Code"><i class="fas fa-qrcode"></i></a>' +
-              '&nbsp;<a href="#" class="text-muted" data-toggle="tooltip" data-placement="top" title="Add New Document"><i class="fas fa-file-medical"></i></a>' +
+              // Generate QR Code
+              '<a href="#" class="btn btn-sm btn-outline-danger" data-tooltip="tooltip" data-placement="top" title="Generate QR Code" '+
+              ' data-toggle="modal" data-target="#mdlQR" data-desc="' + eachColl.data().coll_desc + '" '+
+              ' data-id="' + eachColl.data().coll_id + '" data-storage="' + eachColl.data().coll_storagename + '">'+
+              '<i class="fas fa-qrcode"></i></a>' +
+              // Add New Doc
+              '&nbsp;<a href="#" class="btn btn-sm btn-warning" data-tooltip="tooltip" data-placement="top" title="Add New Document" '+
+              ' data-toggle="modal" data-target="#mdlAddDoc" data-collid="' + eachColl.data().coll_id + '" '+
+              ' >New <i class="fas fa-file-medical"></i></a>' +
               '</td>' +
               '<td><a href="#" data-toggle="modal" data-target="#mdlCollDetails" data-id="' + eachColl.data().coll_id + '" ' +
               'data-storage="' + eachColl.data().coll_storagename + '" data-jobref="' + eachColl.data().coll_jobref + '">' + eachColl.data().coll_id + '</a></td>' +
@@ -144,6 +154,7 @@
               '</tr>')
             $(function () {
               $('[data-toggle="tooltip"]').tooltip()
+              $('[data-tooltip="tooltip"]').tooltip()
             })
             h++;
           })
@@ -196,8 +207,31 @@
           })
       })
 
+      $('#mdlQR').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget)
+        var desc = button.data('desc')
+        var storage = button.data('storage')
+        var id = button.data('id')
+        var modal = $(this)
+        modal.find('.modal-title').html('QR for ' + id + '.')
+        $('#qrHolder').empty();
+        var el = kjua({text: 'https://google.com/?id='+id});
+        $('#qrHolder').append(el);
+        //modal.find('.modal-body input').val(recipient)
+      })
+
+      $('#mdlAddDoc').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget)
+        var collid = button.data('collid')
+        var modal = $(this)
+        modal.find('.modal-title').html('Add New Doc to Collection <span class="text-info">' + collid + '</span>.')
+        //modal.find('.modal-body input').val(recipient)
+      })
+
+
       $(function () {
         $('[data-toggle="tooltip"]').tooltip()
+        $('[data-tooltip="tooltip"]').tooltip()
       })
 
     } else {
@@ -208,7 +242,6 @@
   // Grab the sessionStorage after 2 seconds
   setTimeout(function () {
     let localUserData = JSON.parse(sessionStorage.getItem('localUserData'));
-    console.log('Fullname: ' + localUserData["fullname"]);
     $('#headerFullname').text(localUserData["fullname"])
   }, 2000);
 

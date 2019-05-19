@@ -8,7 +8,7 @@
         <tr>
           <th scope="col" class="text-center align-middle">#</th>
           <th scope="col" class=""></th>
-          <th scope="col" class="align-middle">Collection Identfier</th>
+          <th scope="col" class="align-middle">Collection Identifier</th>
           <th scope="col" class="align-middle">Collection Description</th>
           <th scope="col" class="align-middle">Storage Location</th>
         </tr>
@@ -22,6 +22,66 @@
 <!-- ################ -->
 <!--       MODAL      -->
 <!-- ################ -->
+<!-- XXXXXXXXXXXX -->
+<!-- Modal for Add New Document -->
+<div class="modal fade" id="mdlAddDoc" tabindex="-1" role="dialog" aria-labelledby="mdlAddDocTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mdlAddDocTitle">Add New Doc to Collection</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <form>
+          <div class="form-group row">
+            <label for="docName" class="col-sm-3 col-form-label text-secondary">Doc Name</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="docName" placeholder="Ex: Audit Schematic (Rev 3)">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="docRef" class="col-sm-3 col-form-label text-secondary">Doc Ref</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="docRef" placeholder="(Optional)">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="docDesc" class="col-sm-3 col-form-label text-secondary">Description</label>
+            <div class="col-sm-9">
+              <textarea class="form-control" id="docDesc" rows="3"
+                placeholder="Some description about this doc.."></textarea>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-sm-3 text-white">Sensitivity</div>
+            <div class="col-sm-9">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="docSensitive" value="true">
+                <label class="form-check-label" for="docSensitive">
+                  Contains sensitive info
+                </label>
+              </div>
+            </div>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- XXXXXXXXXXXX -->
+<!-- Modal for Collection Details -->
 <div class="modal fade" id="mdlCollDetails" tabindex="-1" role="dialog" aria-labelledby="mdlCollDetailsTitle"
   aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -55,7 +115,7 @@
         </div>
 
         <div class="row">
-          <div class="col-sm-2 text-info text-right font-weight-bold" id="divViewCollDates">
+          <div class="col-sm-2 text-info text-right" id="divViewCollDates">
             5 May 2019
           </div>
           <div class="col-sm-10" id="divViewCollDocs">
@@ -65,7 +125,7 @@
         </div>
 
         <div class="row">
-          <div class="col-sm-2 text-info text-right font-weight-bold" id="divViewCollDates">
+          <div class="col-sm-2 text-info text-right" id="divViewCollDates">
             9 May 2019
           </div>
           <div class="col-sm-10" id="divViewCollDocs">
@@ -74,6 +134,30 @@
           </div>
         </div>
 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="btnSaveEditCollection">Update Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- XXXXXXXXXXXX -->
+<!-- Modal for QR -->
+<div class="modal fade" id="mdlQR" tabindex="-1" role="dialog" aria-labelledby="mdlQRLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mdlQRLabel">QR Code</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center align-middle valign-middle" id="qrHolder">
+
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

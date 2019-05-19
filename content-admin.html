@@ -1,3 +1,6 @@
+<!-- XXXXXXXXXXXXXXXXXX -->
+<!-- ADD DOCU TYPE -->
+<!-- XXXXXXXXXXXXXXXXXX -->
 <div class="row">
   <div class="col-md-8">
     <form id="formDocuType">
@@ -47,6 +50,9 @@
 
 <hr class="mb-12">
 
+<!-- XXXXXXXXXXXXXXXXXX -->
+<!-- ADD STORAGE LOCATION -->
+<!-- XXXXXXXXXXXXXXXXXX -->
 <div class="row">
   <div class="col-md-8">
     <form id="formLocation">
@@ -138,10 +144,17 @@
 
 <hr class="mb-12">
 
+<!-- XXXXXXXXXXXXXXXXXX -->
+<!-- ADD USER -->
+<!-- XXXXXXXXXXXXXXXXXX -->
 <div class="row">
   <div class="col-md-8">
     <form id="formUser">
       <h5 class="text-info"><i class="fas fa-users"></i> Add New User</h5>
+      <div class="form-group">
+        <small class="text-muted">Note: This will create the user data but the actual user creation has to be done via
+          <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a>.</small>
+      </div>
       <div class="form-group row">
         <label for="userName" class="col-sm-2 col-form-label">Fullname</label>
         <div class="col-sm-10">
@@ -197,7 +210,7 @@
 </div>
 
 <!-- ################## -->
-<!-- MODAL -->
+<!-- MODAL EDIT USER -->
 <div class="modal fade" id="mdlEditUser" tabindex="-1" role="dialog" aria-labelledby="mdlEditUserLabel"
   aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -219,7 +232,8 @@
           <div class="form-group row">
             <label for="editUserEmail" class="col-sm-2 col-form-label">Email</label>
             <div class="col-sm-10">
-              <input type="email" class="form-control-plaintext" id="editUserEmail" placeholder="Ex: JohnDoe@company.com" readonly>
+              <input type="email" class="form-control-plaintext" id="editUserEmail"
+                placeholder="Ex: JohnDoe@company.com" readonly>
             </div>
           </div>
           <div class="form-group row">
@@ -246,6 +260,95 @@
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="btnEditUser">Save User</button>
         <button class="btn btn-danger" id="btnDeleteUser"><i class="far fa-trash-alt"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ################## -->
+<!-- MODAL EDIT STORAGE LOCATION -->
+<div class="modal fade" id="mdlEditStorageLocation" tabindex="-1" role="dialog"
+  aria-labelledby="mdlEditStorageLocationLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mdlEditStorageLocationLabel">Edit Storage Location</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="formEditLocation">
+          <input type="hidden" id="editLocationId">
+          <div class="form-group row">
+            <label for="editLocationName" class="col-sm-2 col-form-label">Name</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="editLocationName" placeholder="Ex: Warehouse 3, Bandar Utama">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="editLocationManager" class="col-sm-2 col-form-label">Manager</label>
+            <div class="col-sm-10">
+              <select class="form-control" id="editLocationManager">
+
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="editLocationContact" class="col-sm-2 col-form-label">Contact</label>
+            <div class="col-sm-10">
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="basic-addon12">+</span>
+                </div>
+                <input type="number" class="form-control" id="editLocationContact" placeholder="Ex: 0371566651"
+                  aria-label="Contact" aria-describedby="basic-addon12">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="editLocationAddress" class="col-sm-2 col-form-label">Address</label>
+            <div class="col-sm-10">
+              <textarea class="form-control" id="editLocationAddress"
+                placeholder="Ex: Lot 318, Taman Kosas Utaam, Selangor." rows="3"></textarea>
+            </div>
+          </div>
+          <fieldset class="form-group">
+            <div class="row">
+              <legend class="col-form-label col-sm-2 pt-0">Type</legend>
+              <div class="col-sm-10">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="editLocationType" id="editLocationTypeWarehouse"
+                    value="warehouse">
+                  <label class="form-check-label" for="editLocationTypeWarehouse">
+                    Warehouse
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="editLocationType" id="editLocationTypeOffice"
+                    value="office">
+                  <label class="form-check-label" for="editLocationTypeOffice">
+                    Unit Office
+                  </label>
+                </div>
+                <div class="form-check disabled">
+                  <input class="form-check-input" type="radio" name="editLocationType" id="editLocationTypeClient"
+                    value="client">
+                  <label class="form-check-label" for="editLocationTypeClient">
+                    Client Site Office
+                  </label>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="btnUpdateStorageLocation">Update Location</button>
+        <button class="btn btn-danger" id="btnDeleteStorageLocation"><i class="far fa-trash-alt"></i></button>
       </div>
     </div>
   </div>
@@ -281,14 +384,15 @@
   })
 
   // #############################
-  // Process for Add Location
+  // Process for Add Storage Location
   // #############################
   $('#btnAddLocation').on('click', function (event) {
     event.preventDefault();
     db.collection("storagelocations").doc()
       .set({
         location_name: $('#locationName').val(),
-        location_pic: $('#locationManager').val(),
+        location_pic: $('#locationManager').val().split('|')[1],
+        location_email: $('#locationManager').val().split('|')[0],
         location_contact: $('#locationContact').val(),
         location_address: $('#locationAddress').val(),
         location_type: $('input[name=locationType]:checked').val(),
@@ -297,7 +401,26 @@
         console.log("Successfully saved new location!");
         $('#formLocation').trigger("reset");
       }).catch(function (e) {
-        console.log("Error saving new location:", e);
+        console.log("Error saved new location:", e);
+      });
+  })
+
+  $('#btnUpdateStorageLocation').on('click', function (event) {
+    event.preventDefault();
+    db.collection("storagelocations").doc($('#editLocationId').val())
+      .update({
+        location_name: $('#editLocationName').val(),
+        location_pic: $('#editLocationManager').val().split('|')[1],
+        location_email: $('#editLocationManager').val().split('|')[0],
+        location_contact: $('#editLocationContact').val(),
+        location_address: $('#editLocationAddress').val(),
+        location_type: $('input[name=editLocationType]:checked').val(),
+        lastupdate: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function () {
+        console.log("Successfully uodated location!");
+        $('#mdlEditStorageLocation').modal('hide');
+      }).catch(function (e) {
+        console.log("Error uodated location:", e);
       });
   })
 
@@ -305,10 +428,53 @@
     $('#locationTable').empty()
     let u = 0;
     allLocations.forEach(function (loc) {
-      $('#locationTable').append('<tr><td>' + (u + 1) + '</td><td>' + loc.data().location_name + '</td></tr>')
+      $('#locationTable').append(
+        '<tr>' +
+        '<td>' + (u + 1) + '</td>' +
+        '<td><a href="#" data-toggle="modal" data-target="#mdlEditStorageLocation" '+
+        ' data-locid="' + loc.id + '" '+
+        ' data-locname="' + loc.data().location_name + '" '+
+        ' data-address="' + loc.data().location_address + '" '+
+        ' data-contact="' + loc.data().location_contact + '" '+
+        ' data-email="' + loc.data().location_email + '" '+
+        ' data-pic="' + loc.data().location_pic + '" '+
+        ' data-type="' + loc.data().location_type + '" '+
+        '>' + loc.data().location_name + '</a></td>' +
+        '</tr>')
       u++;
     })
   })
+
+  $('#mdlEditStorageLocation').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var locid = button.data('locid')
+    var locname = button.data('locname')
+    var address = button.data('address')
+    var contact = button.data('contact')
+    var pic = button.data('pic')
+    var email = button.data('email')
+    var type = button.data('type')
+    var modal = $(this)
+    modal.find('.modal-title').html('Edit storage location: <span class="text-info"> ' + name + '</span>')
+    modal.find('#editLocationName').val(locname)
+    modal.find('#editLocationContact').val(contact)
+    modal.find('#editLocationAddress').val(address)
+    modal.find('#editLocationId').val(locid)
+    modal.find('#formEditLocation option[value="'+email+'|'+pic+'"]').prop('selected', true)
+    modal.find('#formEditLocation input[value='+type+']').prop('checked', true)
+    modal.find('#btnDeleteStorageLocation').attr('onclick', 'deleteLocation("' + locid + '");')
+  })
+
+  function deleteLocation(locid) {
+    console.log('deleteLocation function triggered!');
+    db.collection('storagelocations').doc(locid).delete()
+      .then(function () {
+        console.log("Successfully deleted location " + locid + ".");
+        $('#mdlEditStorageLocation').modal('hide')
+      }).catch(function (e) {
+        console.log("Failed to delete location " + locid + ":", e);
+      });
+  }
 
   // #############################
   // Process for Add User
@@ -333,25 +499,65 @@
   db.collection('users').onSnapshot(function (allUsers) {
     $('#userTable').empty()
     $('#locationManager').empty()
+    $('#editLocationManager').empty()
     $('#locationManager').append('<option>Choose a user..</option>')
     let u = 0;
     allUsers.forEach(function (eachUser) {
-      $('#userTable').append('<tr><td>' + (u + 1) + '</td><td><a href="#" data-toggle="modal" data-target="#mdlEditUser" '+
-        'data-fullname="' + eachUser.data().fullname + '" data-department="' + eachUser.data().department + '">' + eachUser.data().fullname + '</a></td>'+
+      $('#userTable').append('<tr><td>' + (u + 1) + '</td><td><a href="#" data-toggle="modal" data-target="#mdlEditUser" ' +
+        'data-fullname="' + eachUser.data().fullname + '" data-department="' + eachUser.data().department + '" data-mobile="' + eachUser.data().mobile + '"' +
+        ' data-email="' + eachUser.id + '" >' + eachUser.data().fullname + '</a></td>' +
         '<td>' + eachUser.data().department + '</td></tr>')
-      $('#locationManager').append('<option value="' + eachUser.id + '|' + eachUser.data().fullname + '">' + eachUser.data().fullname + ' (' + eachUser.data().email + ')</option>');
+      $('#locationManager').append('<option value="' + eachUser.id + '|' + eachUser.data().fullname + '">' + eachUser.data().fullname + ' (' + eachUser.id + ')</option>');
+      $('#editLocationManager').append('<option value="' + eachUser.id + '|' + eachUser.data().fullname + '">' + eachUser.data().fullname + ' (' + eachUser.id + ')</option>');
       u++;
     })
   })
 
+  $('#btnEditUser').on('click', function (event) {
+    event.preventDefault();
+    db.collection("users").doc($('#editUserEmail').val())
+      .update({
+        fullname: $('#editUserName').val(),
+        mobile: $('#editUserMobile').val(),
+        department: $('#editUserDepartment').val(),
+        lastupdate: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function () {
+        console.log("Successfully saved updated user details!");
+        $('#formUser').trigger("reset");
+      }).catch(function (e) {
+        console.log("Error saving updated user details:", e);
+      });
+  })
+
   $('#mdlEditUser').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget) // Button that triggered the modal
-    var fullname = button.data('fullname') // Extract info from data-* attributes
+    var fullname = button.data('fullname')
+    var mobile = button.data('mobile')
+    var email = button.data('email')
     var department = button.data('department')
     var modal = $(this)
     modal.find('.modal-title').html('Edit user <span class="text-info"> ' + fullname + '</span>')
-    modal.find('#editUserFullname').val(fullname)
+    modal.find('#editUserName').val(fullname)
+    modal.find('#editUserMobile').val(mobile)
+    modal.find('#editUserEmail').val(email)
     modal.find('#editUserDepartment').val(department)
-    //modal.find('.modal-body input').val(recipient)
+    modal.find('#btnDeleteUser').attr('onclick', 'deleteUser("' + email + '");')
   })
+
+  function deleteUser(email) {
+    db.collection('users').doc(email).delete()
+      .then(function () {
+        console.log("Successfully deleted user " + email + ".");
+      }).catch(function (e) {
+        console.log("Failed to delete user " + email + ":", e);
+      });
+
+    db.collection('auth_admin').doc(email).delete()
+      .then(function () {
+        console.log("Successfully deleted user " + email + " from auth_admin.");
+        $('#mdlEditUser').modal('hide');
+      }).catch(function (e) {
+        console.log("Failed to delete user " + email + " from auth_admin:", e);
+      });
+  }
 </script>
