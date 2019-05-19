@@ -127,7 +127,6 @@
           }
         });
 
-      // Populate collection listing for non-archived collections
       db.collection('collections').where('archived', '==', false)
         .onSnapshot(function (allCollection) {
           $('#collectionTableBody').empty()
@@ -138,13 +137,13 @@
               '<td class="text-center align-middle">' + (h + 1) + '</td>' +
               '<td class="text-center align-middle">' +
               // Generate QR Code
-              '<a href="#" class="btn btn-sm btn-outline-info" data-tooltip="tooltip" data-placement="top" title="Generate QR Code" ' +
+              '<a href="#" class="btn btn-sm btn-outline-info" ' +
               ' data-toggle="modal" data-target="#mdlQR" data-desc="' + eachColl.data().coll_desc + '" ' +
               ' data-id="' + eachColl.data().coll_id + '" data-storage="' + eachColl.data().coll_storagename + '" ' +
               ' data-jobref="' + eachColl.data().coll_jobref + '">' +
               '<i class="fas fa-qrcode"></i></a>' +
               // Add New Doc
-              '&nbsp;<a href="#" class="btn btn-sm btn-warning" id="addNewDoc' + eachColl.data().coll_id + '" data-tooltip="tooltip" data-placement="top" title="Add New Document" ' +
+              '&nbsp;<a href="#" class="btn btn-sm btn-warning" id="addNewDoc' + eachColl.data().coll_id + '" ' +
               ' data-toggle="modal" data-target="#mdlAddDoc" data-collid="' + eachColl.data().coll_id + '" ' +
               ' data-collfsid="' + eachColl.id + '" ' +
               ' >New <i class="fas fa-file-medical"></i></a>' +
@@ -161,18 +160,26 @@
             })
             // Increment counter
             h++;
-          })
+          }) // end for each
+          console.log("Done rebuildindg collection tabl;e!");
         })
 
       // snapshot of ALL docs - mIGHT NEED OPTIMIZATION
       // will grab all doku and put in sessionStroage
-      let allDokuHolder = [];
       db.collection('doku').where('archived', '==', false)
         .onSnapshot(function (allDoku) {
+          $('#viewCollHolder').empty()
           allDoku.forEach(function (eachDoku) {
-            allDokuHolder.push(eachDoku.data());
+            $('#viewCollHolder').append(
+              '<div class="dokuitem row" id="collection'+eachDoku.data().doc_coll+'">' +
+              '<div class="col-sm-2 text-info text-right">' + timeConverter(eachDoku.data().lastupdate["seconds"]) + '</div>' +
+              '<div class="col-sm-10">' +
+              '<span class="text-muted">Document <span class="text-dark">' + eachDoku.data().doc_name + '</span> added by ' +
+              '<span class="text-dark">' + eachDoku.data().addedby + '</span>.</span>' +
+              '</div>' +
+              '</div>'
+            ) // end append
           })
-          sessionStorage.setItem('allDokuHolder', JSON.stringify(allDokuHolder));
         })
 
       // Modal actions for #mdlAddNewCollection shown
@@ -196,38 +203,35 @@
         var storage = button.data('storage')
         var jobref = button.data('jobref')
         var modal = $(this)
-        var allDokuHolder = JSON.parse(sessionStorage.getItem('allDokuHolder'));
-        console.log(allDokuHolder[0]);
         modal.find('.modal-title').html('Details for collection <span class="text-info">' + collid + '</span>.')
         modal.find('#viewCollStorageName').val(storage)
         modal.find('#viewCollJobRef').val(jobref)
-        $('#viewCollHolder').empty()
-        
-        allDokuHolder.forEach(function (eachDoku) {
-          console.log("Current doku col: "+eachDoku["doc_coll"]);
-          if (eachDoku["doc_coll"] == collid) {
-            $('#viewCollHolder').append(
-              '<div class="row">' +
-              '<div class="col-sm-2 text-info text-right">' + timeConverter(eachDoku["lastupdate"]["seconds"]) + '</div>' +
-              '<div class="col-sm-10">' +
-              '<span class="text-muted">Document <span class="text-dark">'+eachDoku["doc_name"]+'</span> added by ' +
-              '<span class="text-dark">'+eachDoku["addedby"]+'</span>.</span>' +
-              '</div>' +
-              '</div>'
-            ) // end append
-          } // end if
-        })
-
+        $('#viewCollHolder').children('.dokuitem:not(#collection'+collid+')').hide()
+        //$('.dokuitem #collection'+collid).show()
+        //$('.dokuitem :not(#collection'+collid+')').hide()
       })
 
+      $('#mdlCollDetails').on('hidden.bs.modal', function (event) {
+        $('#viewCollHolder').children('.dokuitem').show()
+        //modal.find('#collection'+collid).each().show().siblings(':not(#collection'+collid+')').hide();
+      })
+      
+
       $('#btnAddNewColl').on('click', function () {
+        
+        let coll_id =  $('#newCollId').val()
+        let coll_desc = $('#newCollDesc').val()
+        let coll_jobref = $('#newCollJobRef').val()
+        let coll_storageid = $('#newCollStorageLocation').val().split('|')[0]
+        let coll_storagename = $('#newCollStorageLocation').val().split('|')[1]
+        
         db.collection('collections').doc()
           .set({
-            coll_id: $('#newCollId').val(),
-            coll_desc: $('#newCollDesc').val(),
-            coll_jobref: $('#newCollJobRef').val(),
-            coll_storageid: $('#newCollStorageLocation').val().split('|')[0],
-            coll_storagename: $('#newCollStorageLocation').val().split('|')[1],
+            coll_id: coll_id,
+            coll_desc: coll_desc,
+            coll_jobref: coll_jobref,
+            coll_storageid: coll_storageid,
+            coll_storagename: coll_storagename,
             archived: false,
             addedby: user.email,
             lastupdate: firebase.firestore.FieldValue.serverTimestamp()
@@ -290,36 +294,22 @@
         //console.log('attr is: '+modal.find('#btnPrintQRLabel').attr('data-collid'));
       })
 
-      $('#mdlAddDoc').on('show.bs.modal', function (event) {
+      $('#mdlAddDoc').on('shown.bs.modal', function (event) {
         var button = $(event.relatedTarget)
         var collid = button.data('collid')
         var collfsid = button.data('collfsid')
         var modal = $(this)
         modal.find('.modal-title').html('Add New Doc to Collection <span class="text-info">' + collid + '</span>.')
+        modal.find('#docColl').val(collid)
+        modal.find('#docCollFsId').val(collfsid)
+        modal.find('#addedby').val(user.email)
+        modal.find('#btnAddDoc').attr('onclick', 'saveNewDocument();')
+      })
 
-        $('#btnAddDoc').on('click', function () {
-          console.log('Sensitive: ' + $('#docSensitive').is(':checked'));
-          db.collection('doku/').doc()
-            .set({
-              addedby: user.email,
-              lastupdate: firebase.firestore.FieldValue.serverTimestamp(),
-              doc_name: $('#docName').val(),
-              doc_coll: collid,
-              doc_collfsid: collfsid,
-              archived: false,
-              doc_ref: $('#docRef').val(),
-              doc_desc: $('#docDesc').val(),
-              doc_sensitive: $('#docSensitive').is(':checked')
-            }).then(function () {
-              console.log("Done saving new doc!");
-              $('#formAddDocument').trigger('reset')
-            }).catch(function (e) {
-              console.log("Error saving new doc: ", e);
-            });
-        })
-
-        // Close thee Tooltip
-        $('#addNewDoc' + collid).tooltip('hide')
+      $('#mdlAddDoc').on('hide.bs.modal', function (event) {
+        console.log("mdlAddDoc hide now!");
+        $('.dokuitem').each().show()
+        $('#formAddDocument').trigger('reset')
       })
 
       $('#btnPrintQRLabel').on('click', function (event) {
@@ -361,4 +351,34 @@
   }, 2000);
 
 
+  function saveNewDocument() {
+    // save
+    let addedby = $('#addedby').val()
+    let doc_name = $('#docName').val()
+    let doc_coll = $('#docColl').val()
+    let doc_collfsid = $('#docCollFsId').val()
+    let doc_ref = $('#docRef').val()
+    let doc_desc = $('#docDesc').val()
+    let doc_sensitive = $('#docSensitive').is(':checked')
+
+    db.collection('doku/').doc()
+      .set({
+        addedby: addedby,
+        lastupdate: firebase.firestore.FieldValue.serverTimestamp(),
+        doc_name: doc_name,
+        doc_coll: doc_coll,
+        doc_collfsid: doc_collfsid,
+        archived: false,
+        doc_ref: doc_ref,
+        doc_desc: doc_desc,
+        doc_sensitive: doc_sensitive
+      }).then(function () {
+        console.log("Done saving new doc!");
+        $('#formAddDocument').trigger('reset')
+        $('#viewCollHolder').empty()
+        $('#mdlAddDoc').modal('hide');
+      }).catch(function (e) {
+        console.log("Error saving new doc: ", e);
+      });
+  }
 </script>
