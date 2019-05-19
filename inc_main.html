@@ -140,12 +140,13 @@
               // Generate QR Code
               '<a href="#" class="btn btn-sm btn-outline-info" data-tooltip="tooltip" data-placement="top" title="Generate QR Code" ' +
               ' data-toggle="modal" data-target="#mdlQR" data-desc="' + eachColl.data().coll_desc + '" ' +
-              ' data-id="' + eachColl.data().coll_id + '" data-storage="' + eachColl.data().coll_storagename + '" '+
+              ' data-id="' + eachColl.data().coll_id + '" data-storage="' + eachColl.data().coll_storagename + '" ' +
               ' data-jobref="' + eachColl.data().coll_jobref + '">' +
               '<i class="fas fa-qrcode"></i></a>' +
               // Add New Doc
               '&nbsp;<a href="#" class="btn btn-sm btn-warning" id="addNewDoc' + eachColl.data().coll_id + '" data-tooltip="tooltip" data-placement="top" title="Add New Document" ' +
               ' data-toggle="modal" data-target="#mdlAddDoc" data-collid="' + eachColl.data().coll_id + '" ' +
+              ' data-collfsid="' + eachColl.id + '" ' +
               ' >New <i class="fas fa-file-medical"></i></a>' +
               '</td>' +
               '<td><a href="#" data-toggle="modal" data-target="#mdlCollDetails" data-id="' + eachColl.data().coll_id + '" ' +
@@ -153,12 +154,25 @@
               '<td>' + eachColl.data().coll_desc + '</td>' +
               '<td>' + eachColl.data().coll_storagename + '</td>' +
               '</tr>')
+            // Activate tooltips
             $(function () {
               $('[data-toggle="tooltip"]').tooltip()
               $('[data-tooltip="tooltip"]').tooltip()
             })
+            // Increment counter
             h++;
           })
+        })
+
+      // snapshot of ALL docs - mIGHT NEED OPTIMIZATION
+      // will grab all doku and put in sessionStroage
+      let allDokuHolder = [];
+      db.collection('doku').where('archived', '==', false)
+        .onSnapshot(function (allDoku) {
+          allDoku.forEach(function (eachDoku) {
+            allDokuHolder.push(eachDoku.data());
+          })
+          sessionStorage.setItem('allDokuHolder', JSON.stringify(allDokuHolder));
         })
 
       // Modal actions for #mdlAddNewCollection shown
@@ -178,14 +192,32 @@
       // Modal actiosn for #mdlCollDetails
       $('#mdlCollDetails').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget)
-        var id = button.data('id')
+        var collid = button.data('id')
         var storage = button.data('storage')
         var jobref = button.data('jobref')
         var modal = $(this)
-        modal.find('.modal-title').html('Details for collection <span class="text-info">' + id + '</span>.')
+        var allDokuHolder = JSON.parse(sessionStorage.getItem('allDokuHolder'));
+        console.log(allDokuHolder[0]);
+        modal.find('.modal-title').html('Details for collection <span class="text-info">' + collid + '</span>.')
         modal.find('#viewCollStorageName').val(storage)
         modal.find('#viewCollJobRef').val(jobref)
-        //modal.find('.modal-body input').val(recipient)
+        $('#viewCollHolder').empty()
+        
+        allDokuHolder.forEach(function (eachDoku) {
+          console.log("Current doku col: "+eachDoku["doc_coll"]);
+          if (eachDoku["doc_coll"] == collid) {
+            $('#viewCollHolder').append(
+              '<div class="row">' +
+              '<div class="col-sm-2 text-info text-right">' + timeConverter(eachDoku["lastupdate"]["seconds"]) + '</div>' +
+              '<div class="col-sm-10">' +
+              '<span class="text-muted">Document <span class="text-dark">'+eachDoku["doc_name"]+'</span> added by ' +
+              '<span class="text-dark">'+eachDoku["addedby"]+'</span>.</span>' +
+              '</div>' +
+              '</div>'
+            ) // end append
+          } // end if
+        })
+
       })
 
       $('#btnAddNewColl').on('click', function () {
@@ -261,8 +293,32 @@
       $('#mdlAddDoc').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget)
         var collid = button.data('collid')
+        var collfsid = button.data('collfsid')
         var modal = $(this)
         modal.find('.modal-title').html('Add New Doc to Collection <span class="text-info">' + collid + '</span>.')
+
+        $('#btnAddDoc').on('click', function () {
+          console.log('Sensitive: ' + $('#docSensitive').is(':checked'));
+          db.collection('doku/').doc()
+            .set({
+              addedby: user.email,
+              lastupdate: firebase.firestore.FieldValue.serverTimestamp(),
+              doc_name: $('#docName').val(),
+              doc_coll: collid,
+              doc_collfsid: collfsid,
+              archived: false,
+              doc_ref: $('#docRef').val(),
+              doc_desc: $('#docDesc').val(),
+              doc_sensitive: $('#docSensitive').is(':checked')
+            }).then(function () {
+              console.log("Done saving new doc!");
+              $('#formAddDocument').trigger('reset')
+            }).catch(function (e) {
+              console.log("Error saving new doc: ", e);
+            });
+        })
+
+        // Close thee Tooltip
         $('#addNewDoc' + collid).tooltip('hide')
       })
 
@@ -279,13 +335,13 @@
         doc.setFontSize(18)
         doc.text(35, 20, collid)
         doc.setFontSize(8)
-        doc.text(35, 30, "Project Ref     : "+jobref)
+        doc.text(35, 30, "Project Ref     : " + jobref)
         doc.text(35, 35, "Project Owner   : Mr Adam")
-        doc.text(35, 40, "Primary Storage : "+storage)
+        doc.text(35, 40, "Primary Storage : " + storage)
         doc.save();
         //doc.autoPrint()
         //doc.addJS('print({});');
-        console.log('collid is '+collid);
+        console.log('collid is ' + collid);
       })
 
       $(function () {
