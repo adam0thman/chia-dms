@@ -166,13 +166,14 @@
 
       // snapshot of ALL docs - mIGHT NEED OPTIMIZATION
       // will grab all doku and put in sessionStroage
-      db.collection('doku').where('archived', '==', false)
+      db.collection('doku').where('archived', '==', false).orderBy("lastupdate")
         .onSnapshot(function (allDoku) {
           $('#viewCollHolder').empty()
+          console.log("Populating doku...");
           allDoku.forEach(function (eachDoku) {
             $('#viewCollHolder').append(
               '<div class="dokuitem row" id="collection'+eachDoku.data().doc_coll+'">' +
-              '<div class="col-sm-2 text-info text-right">' + timeConverter(eachDoku.data().lastupdate["seconds"]) + '</div>' +
+              '<div class="col-sm-2 text-info text-right"><small>' + timeConverter(eachDoku.data().lastupdate["seconds"]) + '</small></div>' +
               '<div class="col-sm-10">' +
               '<span class="text-muted">Document <span class="text-dark">' + eachDoku.data().doc_name + '</span> added by ' +
               '<span class="text-dark">' + eachDoku.data().addedby + '</span>.</span>' +
